@@ -6,7 +6,7 @@ import PhotoItems from './PhotoItems';
 export interface Photo {
   id: string,
   urls: {
-    small : any
+    small : string
   }
 };
 
@@ -53,8 +53,8 @@ const Photos: React.FC = () => {
 
   useEffect(() => {
     fetchMorePhotos();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [photos])
 
   return(
     <PhotoBlock>
