@@ -63,7 +63,7 @@ const Photos: React.FC = () => {
       ))}
       {loading && <Loading>Loading...</Loading>}
       {error && <Error>error</Error>}
-    </PhotoBlock >
+    </PhotoBlock>
   )
 }
 
