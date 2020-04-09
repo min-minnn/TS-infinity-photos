@@ -20,45 +20,50 @@ const PhotoBlock = styled.div`
   }
 `;
 
+const Loading = styled.h4`
+  padding: 1rem;
+`;
+
+const Error = styled.h4`
+  padding: 1rem;
+`;
+
 const Photos: React.FC = () => {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState(null);
 
-  const fetchMorePhotos = () => {
-    setTimeout(() => {
+  const fetchMorePhotos = async() => {
+    try {
       setLoading(true);
-      try {
-        axios.get('https://api.unsplash.com/photos/random', {
-          params: {
-            client_id: 'XjG_79dJXuU7Zx5TRHZBBmSTuqTdcAs_LtyesusCJNU',
-            count: 30
-          }
-        })
-        .then((response) => {
-          setPhotos(photos.concat(response.data));
-        }); 
-      } catch (e) {
-        setError(e);
-      }
+      await axios.get('https://api.unsplash.com/photos/random', {
+        params: {
+          client_id: 'XjG_79dJXuU7Zx5TRHZBBmSTuqTdcAs_LtyesusCJNU',
+          count: 30
+        }
+      })
+      .then((response) => {
+        setPhotos(photos.concat(response.data));
+      }); 
+    } catch (e) {
+      setError(e);
+    }
     setLoading(false);
-    }, 2000)
   };
 
   useEffect(() => {
     fetchMorePhotos();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [photos])
-
-  if(loading) return <h4>loading...</h4>;
-  if(error) return <h4>error</h4>
+  }, [])
 
   return(
     <PhotoBlock>
       {photos.map(photo => (
         <PhotoItems key={photo.id} photos={photo} />
       ))}
-    </PhotoBlock>
+      {loading && <Loading>Loading...</Loading>}
+      {error && <Error>error</Error>}
+    </PhotoBlock >
   )
 }
 
