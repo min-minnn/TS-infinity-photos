@@ -46,10 +46,15 @@ const Photos: React.FC = () => {
     try{
       const response = await axios.get('https://api.unsplash.com/photos', {
         params: {
-          client_id: 'ai20XrS30ug4nKcGlAimB68MZ4YMPsNFeEL17YVuSYw',
+          client_id: 'XjG_79dJXuU7Zx5TRHZBBmSTuqTdcAs_LtyesusCJNU',
           page: pageNumber.current
         }})
-          setPhotos([...photos, ...response.data]);
+          if(photos.length === 0){
+            setPhotos(response.data);
+          } else {
+            setPhotos(photos.concat(response.data));
+          }
+          pageNumber.current++;
         } catch (e) {
       setError(e);
     }
