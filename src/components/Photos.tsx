@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, RefObject } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
 import PhotoItems from './PhotoItems';
@@ -10,12 +10,6 @@ export interface Photo {
     small : string
   }
 };
-
-interface paramsProps {
-  client_id: string,
-  page: number,
-  per_page: number
-}
 
 const PhotoBlock = styled.div`
   height: 100%;
@@ -36,8 +30,11 @@ const Loading = styled.h3`
 
 const Photos: React.FC = () => {
   const [photos, setPhotos] = useState<Photo[]>([]);
-  const pageNumber: React.MutableRefObject<number> = useRef<number>(0);
+  const [error, setError] = useState(null);
+
+  const pageNumber = useRef(1);
   const ref: React.RefObject<HTMLDivElement> = useRef<HTMLDivElement>(null);
+  
 
   const intersection = useIntersection(ref, {
     root: null,
@@ -46,24 +43,27 @@ const Photos: React.FC = () => {
   });
 
   const LoadPhotos = async() => {
-    const response = await axios.get('https://api.unsplash.com/photos', {
-      params: {
-        client_id: '8ef4aJi0nfuZjm6Ulw5AxeIL0HKNJRFQNAzpL8jQ0dQ',
-        page: pageNumber.current,
-        per_page: 10
-      }})
-    return response;
+    try{
+      const response = await axios.get('https://api.unsplash.com/photos', {
+        params: {
+          client_id: 'ai20XrS30ug4nKcGlAimB68MZ4YMPsNFeEL17YVuSYw',
+          page: pageNumber.current
+        }})
+          setPhotos([...photos, ...response.data]);
+        } catch (e) {
+      setError(e);
+    }
   }
 
   useEffect(() => {
-    if (intersection && intersection.isIntersecting) {
-      setTimeout(async() => {
-        const response = await LoadPhotos();
-        setPhotos([...photos, ...response.data]);
-      }, )
+    if (!(intersection && intersection.isIntersecting)) {
+      return;
     }
+    LoadPhotos();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [intersection])
+
+  if(error) return <h4>error</h4>
 
   return(
     <PhotoBlock>
@@ -71,7 +71,7 @@ const Photos: React.FC = () => {
         <PhotoItems key={photo.id} photos={photo} />
       ))}
       <div ref={ref}>
-        {intersection ? <Loading>loading</Loading> : null}
+        {intersection? <Loading>loading</Loading> : null}
       </div>
     </PhotoBlock>
   )
