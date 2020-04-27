@@ -32,7 +32,7 @@ const Photos: React.FC = () => {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [error, setError] = useState(null);
 
-  const pageNumber = useRef(1);
+  const pageNumber: React.MutableRefObject<number> = useRef<number>(1);
   const ref: React.RefObject<HTMLDivElement> = useRef<HTMLDivElement>(null);
   
 
@@ -46,25 +46,25 @@ const Photos: React.FC = () => {
     try{
       const response = await axios.get('https://api.unsplash.com/photos', {
         params: {
-          client_id: 'XjG_79dJXuU7Zx5TRHZBBmSTuqTdcAs_LtyesusCJNU',
+          client_id: 'ai20XrS30ug4nKcGlAimB68MZ4YMPsNFeEL17YVuSYw',
           page: pageNumber.current
         }})
-          if(photos.length === 0){
-            setPhotos(response.data);
-          } else {
-            setPhotos(photos.concat(response.data));
-          }
-          pageNumber.current++;
+        if(photos.length === 0) {
+          setPhotos(response.data);
+        } else {
+          setPhotos([...photos, ...response.data]);
+        }
         } catch (e) {
       setError(e);
     }
+    pageNumber.current++;
   }
 
   useEffect(() => {
-    if (!(intersection && intersection.isIntersecting)) {
-      return;
+    if (intersection && intersection.isIntersecting) {
+      LoadPhotos();
     }
-    LoadPhotos();
+      return;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [intersection])
 
